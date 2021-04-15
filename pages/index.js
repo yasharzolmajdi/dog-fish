@@ -13,7 +13,11 @@ const ALL_ANIMAL_TYPES_QUERY = gql`
 `;
 
 export default function Home() {
-  const { data } = useQuery(ALL_ANIMAL_TYPES_QUERY);
+  const { data, loading } = useQuery(ALL_ANIMAL_TYPES_QUERY);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <ul>
@@ -30,16 +34,16 @@ export default function Home() {
   );
 }
 
-export async function getStaticProps() {
-  const apolloClient = initializeApollo();
+// export async function getStaticProps() {
+//   const apolloClient = initializeApollo();
 
-  await apolloClient.query({
-    query: ALL_ANIMAL_TYPES_QUERY,
-  });
+//   await apolloClient.query({
+//     query: ALL_ANIMAL_TYPES_QUERY,
+//   });
 
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-    },
-  };
-}
+//   return {
+//     props: {
+//       initialApolloState: apolloClient.cache.extract(),
+//     },
+//   };
+// }

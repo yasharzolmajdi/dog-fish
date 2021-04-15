@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { gql, useQuery } from "@apollo/client";
 
 export const QUERY = gql`
-  query MyQuery($id: ID) {
+  query MyQuery($id: ID!) {
     getAnimal(id: $id) {
       ... on Dog {
         id
@@ -18,11 +18,15 @@ export default function Dog() {
   const router = useRouter();
   const { animal } = router.query;
 
+  const { data, loading } = useQuery(QUERY, { variables: { id: animal } });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   const {
-    data: {
-      getAnimal: { legs, sound, eat },
-    },
-  } = useQuery(QUERY, { variables: { id: animal } });
+    getAnimal: { legs, sound, eat },
+  } = data;
 
   return (
     <ul>
