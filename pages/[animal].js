@@ -4,6 +4,15 @@ import dynamic from "next/dynamic";
 
 import { initializeApollo } from "../lib/apolloClient";
 
+const ALL_ANIMAL_TYPES_QUERY = gql`
+  query MyQuery {
+    queryAnimal {
+      __typename
+      id
+    }
+  }
+`;
+
 const GET_ANIMAL_TYPE_QUERY = gql`
   query MyQuery($id: ID!) {
     getAnimal(id: $id) {
@@ -33,32 +42,47 @@ function Animal() {
 
 export default Animal;
 
-// export async function getServerSideProps({ params }) {
-//   const id = params.animal;
+export async function getStaticPaths() {
+  const apolloClient = initializeApollo();
 
-//   const apolloClient = initializeApollo();
+  const { data } = await apolloClient.query({
+    query: ALL_ANIMAL_TYPES_QUERY,
+  });
 
-//   const { data } = await apolloClient.query({
-//     query: GET_ANIMAL_TYPE_QUERY,
-//     variables: {
-//       id,
-//     },
-//   });
+  return {
+    paths: data.queryAnimal.map((animal) => ({
+      params: { animal: animal.id },
+    })),
+    fallback: true,
+  };
+}
 
-//   const Type = data.getAnimal.__typename;
+export async function getStaticProps({ params }) {
+  const id = params.animal;
 
-//   const module = await import(`../components/${Type}`);
+  const apolloClient = initializeApollo();
 
-//   await apolloClient.query({
-//     query: module.QUERY,
-//     variables: {
-//       id,
-//     },
-//   });
+  const { data } = await apolloClient.query({
+    query: GET_ANIMAL_TYPE_QUERY,
+    variables: {
+      id,
+    },
+  });
 
-//   return {
-//     props: {
-//       initialApolloState: apolloClient.cache.extract(),
-//     },
-//   };
-// }
+  const Type = data.getAnimal.__typename;
+
+  const module = await import(`../components/${Type}`);
+
+  await apolloClient.query({
+    query: module.QUERY,
+    variables: {
+      id,
+    },
+  });
+
+  return {
+    props: {
+      initialApolloState: apolloClient.cache.extract(),
+    },
+  };
+}

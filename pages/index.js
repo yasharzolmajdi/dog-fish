@@ -34,16 +34,16 @@ export default function Home() {
   );
 }
 
-// export async function getStaticProps() {
-//   const apolloClient = initializeApollo();
+export async function getStaticProps() {
+  const apolloClient = initializeApollo();
 
-//   await apolloClient.query({
-//     query: ALL_ANIMAL_TYPES_QUERY,
-//   });
+  await apolloClient.query({
+    query: ALL_ANIMAL_TYPES_QUERY,
+  });
 
-//   return {
-//     props: {
-//       initialApolloState: apolloClient.cache.extract(),
-//     },
-//   };
-// }
+  return {
+    props: {
+      initialApolloState: apolloClient.cache.extract(),
+    },
+  };
+}
