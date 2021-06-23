@@ -53,7 +53,7 @@ export async function getStaticPaths() {
     paths: data.queryAnimal.map((animal) => ({
       params: { animal: animal.id },
     })),
-    fallback: true,
+    fallback: false,
   };
 }
 
